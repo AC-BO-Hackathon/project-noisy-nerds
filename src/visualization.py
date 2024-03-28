@@ -20,6 +20,6 @@ def grid_search_heatmap(iterations_list, noise_list, performance_matrix):
     
     ax = sn.heatmap(df_heatmap, annot=True, fmt = '.3g', cmap = 'crest')
     ax.set_xlabel('Noise level')
-    ax.set_ylabel('Number of BO iterations')
+    ax.set_ylabel('Number of initial samples')
 
     return ax
