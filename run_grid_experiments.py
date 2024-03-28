@@ -28,6 +28,7 @@ def run_grid_experiments(seeds, n_inits, noise_levels, noise_bools, budget):
     start_time = time()
     tasks = []
     
+    iter = 0
     for seed in seeds:
         for n_init in n_inits:
             for noise_level in noise_levels:
@@ -39,7 +40,8 @@ def run_grid_experiments(seeds, n_inits, noise_levels, noise_bools, budget):
                     sleep(1)
                     task = worker.remote(n_init, noise_level, budget, seed, noise_bool)
                     tasks.append(task)
-                    print(f'Started problem {n_init} noise {noise_level} budget {budget} seed {seed}, time: {time() - start_time:.2f}s')
+                    iter+=1
+                    print(f'Started {iter} {n_init} noise {noise_level} budget {budget} seed {seed}, time: {time() - start_time:.2f}s')
                     gc.collect()
     
     while len(tasks) > 0:
