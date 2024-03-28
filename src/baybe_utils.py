@@ -25,6 +25,7 @@ def run_optimization_campaign(
     N_DIMS_SCHWEF,
     NOISE_LEVEL_SCHWEF,
     ITERATION_BATCH_SIZE,
+    SCHWEFEL_RANGE = (-50,50),
     recommender_init = None,
     recommender_main = None
 ):
@@ -41,7 +42,7 @@ def run_optimization_campaign(
 
     """
     # Define Schweffel oracle
-    schweffer = schwefel.SchwefelProblem(n_var = N_DIMS_SCHWEF, noise_level=NOISE_LEVEL_SCHWEF)
+    schweffer = schwefel.SchwefelProblem(n_var = N_DIMS_SCHWEF, noise_level=NOISE_LEVEL_SCHWEF, range = SCHWEFEL_RANGE)
     target = NumericalTarget(name = 'schwefel', mode = "MIN")
     parameters = [
         NumericalContinuousParameter(f'schwefel{i+1}', bounds = (-500,500)) for i in range(N_DIMS_SCHWEF)
@@ -80,7 +81,7 @@ def run_optimization_campaign(
 
 
 
-def iteration_noise_grid_search(iterations_list, noise_list, NUM_INIT_OBS, N_DIMS_SCHWEF, ITERATION_BATCH_SIZE):
+def iteration_noise_grid_search(iterations_list, noise_list, NUM_INIT_OBS, N_DIMS_SCHWEF, ITERATION_BATCH_SIZE, SCHWEFEL_RANGE = (-50, 50)):
     """
     Utility to run a parameter grid experiment varying noise level and number of BO iterations. Runs full grid in serial.
     Params:
@@ -100,7 +101,7 @@ def iteration_noise_grid_search(iterations_list, noise_list, NUM_INIT_OBS, N_DIM
     for its in iterations_list:
         noise_results = {}
         for noise_level in noise_list:
-            opt_campaign = run_optimization_campaign(its, NUM_INIT_OBS, N_DIMS_SCHWEF, noise_level, ITERATION_BATCH_SIZE)
+            opt_campaign = run_optimization_campaign(its, NUM_INIT_OBS, N_DIMS_SCHWEF, noise_level, ITERATION_BATCH_SIZE, SCHWEFEL_RANGE=SCHWEFEL_RANGE)
             noise_results[str(noise_level)] = opt_campaign
         iteration_results[str(its)] = noise_results
 

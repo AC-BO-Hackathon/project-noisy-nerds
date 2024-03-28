@@ -1,7 +1,7 @@
 import numpy as np
 
 class SchwefelProblem:
-    def __init__(self, n_var=1, noise_level=0.01):
+    def __init__(self, n_var=1, noise_level=0.01, range = (-50, 50)):
         """
         y = f(x) + eps
         """
