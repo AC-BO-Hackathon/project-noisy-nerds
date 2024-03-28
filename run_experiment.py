@@ -36,7 +36,8 @@ def generate_initial_data(problem, n: int, bounds: torch.Tensor) -> tuple:
         bounds=bounds, n=n, q=1, seed=torch.randint(100000, (1,)).item()
     ).squeeze(-1)
     Y_init = torch.tensor(problem.y(X_init.numpy()))
-    return X_init, Y_init
+    Y_init_real = torch.tensor(problem.f(X_init.numpy()))
+    return X_init, Y_init, Y_init_real
 
 # %%
 def initialize_model(train_x, train_y, noise_bool=True) -> tuple:
@@ -111,7 +112,7 @@ def run_experiment(n_init, noise_level, budget, seed, noise_bool):
 
     bounds = torch.tensor(problem.bounds, **tkwargs)
 
-    train_X, train_Y= generate_initial_data(problem, n_init, bounds)
+    train_X, train_Y, train_Y_real= generate_initial_data(problem, n_init, bounds)
 
     start_time = time()
 
@@ -133,14 +134,16 @@ def run_experiment(n_init, noise_level, budget, seed, noise_bool):
             sampler=sampler,
         )
 
-        x_cand, acq_func = optimize_acqf_loop(problem, acq_func)
+        x_cand, acq_func_val = optimize_acqf_loop(problem, acq_func)
         X_cand = unnormalize(x_cand, bounds)
         Y_cand = torch.tensor(problem.y(X_cand.numpy()))
+        Y_cand_real = torch.tensor(problem.f(X_cand.numpy()))
         print(f"New candidate: {X_cand}, {Y_cand}")
 
         # update the model with new observations
         train_X = torch.cat([train_X, X_cand], dim=0)
         train_Y = torch.cat([train_Y, Y_cand], dim=0)
+        train_Y_real = torch.cat([train_Y_real, Y_cand_real], dim=0)        
         
     train_x = normalize(train_X, bounds)
     mll, model = initialize_model(train_x, train_Y, noise_bool)
@@ -148,9 +151,9 @@ def run_experiment(n_init, noise_level, budget, seed, noise_bool):
     
     os.makedirs('results', exist_ok=True)
     fname = f"results/{problem.__class__.__name__[:5]}_n_init_{n_init}_noiselvl_{noise_level}_budget_{budget}_seed_{seed}_noise_{noise_bool}.pt"
-    torch.save((train_X, train_Y, model), fname)
+    torch.save((train_X, train_Y, train_Y_real, model), fname)
     
-    return train_X, train_Y, model
+    return train_X, train_Y, train_Y_real, model
         
         
 if __name__ == "__main__":
