@@ -17,10 +17,12 @@ class SchwefelProblem:
 
     def eps(self, x):
         # Assuming the noise is independent of x for simplicity
-        return np.random.normal(0, self.noise_level, x.shape[0]).reshape(-1, 1)
+        return np.random.normal(0, self.noise_level, x.shape[0])
 
     def y(self, x):
-        return self.f(x) + self.eps(x)
+        f = self.f(x)
+        eps = self.eps(x)
+        return f + eps
 
 # Test code if this file is the main program being run
 if __name__ == "__main__":

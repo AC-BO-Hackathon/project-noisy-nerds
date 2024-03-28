@@ -34,7 +34,7 @@ batch_size = 1
 def generate_initial_data(problem, n: int, bounds: torch.Tensor) -> tuple:
     X_init = draw_sobol_samples(
         bounds=bounds, n=n, q=1, seed=torch.randint(100000, (1,)).item()
-    ).squeeze(-1)
+    ).squeeze(1)
     Y_init = torch.tensor(problem.y(X_init.numpy()))
     Y_init_real = torch.tensor(problem.f(X_init.numpy()))
     return X_init, Y_init, Y_init_real
@@ -108,7 +108,7 @@ def run_experiment(n_init, noise_level, budget, seed, noise_bool):
     torch.manual_seed(seed)
     np.random.seed(seed)
 
-    problem = SchwefelProblem(n_var=1, noise_level=noise_level)
+    problem = SchwefelProblem(n_var=2, noise_level=noise_level)
 
     bounds = torch.tensor(problem.bounds, **tkwargs)
 
