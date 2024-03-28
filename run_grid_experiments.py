@@ -24,7 +24,7 @@ def worker(n_init, noise_level, budget, seed, noise_bool):
 def run_grid_experiments(seeds, n_inits, noise_levels, noise_bools, budget):
     
     # ray.init(local_mode=True)
-    ray.init()
+    ray.init(ignore_reinit_error=True)
     start_time = time()
     tasks = []
     
