@@ -1,13 +1,13 @@
 import numpy as np
 
 class SchwefelProblem:
-    def __init__(self, n_var=1, noise_level=0.01):
+    def __init__(self, n_var=1, noise_level=0.01, range = (-50, 50)):
         """
         y = f(x) + eps
         """
         self.noise_level = noise_level
         self.n_var = n_var  # Number of variables/dimensions
-        self.bounds = np.array([[-500] * self.n_var, [500] * self.n_var])
+        self.bounds = np.array([[range[0]] * self.n_var, [range[1]] * self.n_var])
 
     def _schwefel_individual(self, x):
         return x * np.sin(np.sqrt(np.abs(x)))
