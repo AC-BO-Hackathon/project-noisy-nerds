@@ -74,10 +74,9 @@ def run_experiment(n_init, noise_level, budget, seed, noise_bool):
     objective = Objective(mode = "SINGLE", targets = [target])
     searchspace = SearchSpace.from_product(parameters)
     
-    if recommender_init is None:
-       recommender_init = RandomRecommender()
-    if recommender_main is None:
-        recommender_main = SequentialGreedyRecommender(acquisition_function_cls='EI')
+  
+    recommender_init = RandomRecommender()
+    recommender_main = SequentialGreedyRecommender(acquisition_function_cls='EI')
 
 
     print("Collecting initial observations")
@@ -120,13 +119,15 @@ def run_experiment(n_init, noise_level, budget, seed, noise_bool):
     for i, val in enumerate(y_real):
         y_real_complete[i+len(y_init_real)] = val
     
-    os.makedirs('results', exist_ok=True)
-    fname = f"results/{problem.__class__.__name__[:5]}_n_init_{n_init}_noiselvl_{noise_level}_budget_{budget}_seed_{seed}_noise_{noise_bool}.pt"
-    torch.save((train_X, train_Y, train_Y_real, model), fname)
+
 
     train_X = torch.from_numpy(x_train)
     train_Y = torch.from_numpy(y_train)
     train_Y_real = torch.from_numpy(y_real_complete)
+
+    os.makedirs('results', exist_ok=True)
+    fname = f"results/{problem.__class__.__name__[:5]}_n_init_{n_init}_noiselvl_{noise_level}_budget_{budget}_seed_{seed}_noise_{noise_bool}.pt"
+    torch.save((train_X, train_Y, train_Y_real, None), fname)
     
     return train_X, train_Y, train_Y_real, None
 
