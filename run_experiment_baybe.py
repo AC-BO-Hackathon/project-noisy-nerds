@@ -97,7 +97,7 @@ def run_experiment(n_init, noise_level, budget, seed, noise_bool):
         reccs = optimization_campaign.recommend(ITERATION_BATCH_SIZE)
     
         y_vals = problem.y(reccs.to_numpy())
-        y_real = problem.f(reccs.to_numpy())
+        y_real.append(problem.f(reccs.to_numpy()))
     
         reccs.insert(N_DIMS_SCHWEF, 'schwefel', y_vals)
     
