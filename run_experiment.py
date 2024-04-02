@@ -149,8 +149,8 @@ def run_experiment(n_init, noise_level, budget, seed, noise_bool):
     mll, model = initialize_model(train_x, train_Y, noise_bool)
     fit_gpytorch_model(mll)
     
-    os.makedirs('results', exist_ok=True)
-    fname = f"results/{problem.__class__.__name__[:5]}_n_init_{n_init}_noiselvl_{noise_level}_budget_{budget}_seed_{seed}_noise_{noise_bool}.pt"
+    os.makedirs('results_botorch', exist_ok=True)
+    fname = f"results_botorch/{problem.__class__.__name__[:5]}_n_init_{n_init}_noiselvl_{noise_level}_budget_{budget}_seed_{seed}_noise_{noise_bool}.pt"
     torch.save((train_X, train_Y, train_Y_real, model), fname)
     
     return train_X, train_Y, train_Y_real, model
