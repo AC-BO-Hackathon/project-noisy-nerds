@@ -79,6 +79,7 @@ def run_experiment(n_init, noise_level, budget, seed, noise_bool, bounds):
 
     N_DIMS_SCHWEF = 2
     ITERATION_BATCH_SIZE = 1
+        
 
     torch.manual_seed(seed)
     np.random.seed(seed)
@@ -97,34 +98,34 @@ def run_experiment(n_init, noise_level, budget, seed, noise_bool, bounds):
     
   
     recommender_init = RandomRecommender()
-    recommender_main = SequentialGreedyRecommender(acquisition_function_cls='EI')
+    #recommender_main = SequentialGreedyRecommender(acquisition_function_cls='EI')
 
 
-    print("Collecting initial observations")
+    print("Collecting random observations observations")
     campaign_init = Campaign(searchspace, objective, recommender_init)
-    random_params = campaign_init.recommend(n_init)
+    random_params = campaign_init.recommend(n_init + budget)
     
     y_init = problem.y(random_params.to_numpy())
     y_init_real = problem.f(random_params.to_numpy())
     
     random_params.insert(N_DIMS_SCHWEF, 'schwefel', y_init)
     
-    optimization_campaign = Campaign(searchspace, objective, recommender_main)
-    optimization_campaign.add_measurements(random_params)
+    #optimization_campaign = Campaign(searchspace, objective, recommender_main)
+    campaign_init.add_measurements(random_params)
 
-    y_real = []
-    print('Beginning optimization campaign')
-    for i in range(budget):
-        reccs = optimization_campaign.recommend(ITERATION_BATCH_SIZE)
-    
-        y_vals = problem.y(reccs.to_numpy())
-        y_real.append(problem.f(reccs.to_numpy()))
-    
-        reccs.insert(N_DIMS_SCHWEF, 'schwefel', y_vals)
-    
-        optimization_campaign.add_measurements(reccs)
+    #y_real = []
+    #print('Beginning optimization campaign')
+    #for i in range(budget):
+    #    reccs = optimization_campaign.recommend(ITERATION_BATCH_SIZE)
+   # 
+   #     y_vals = problem.y(reccs.to_numpy())
+   #     y_real.append(problem.f(reccs.to_numpy()))
+   # 
+   #     reccs.insert(N_DIMS_SCHWEF, 'schwefel', y_vals)
+   # 
+   #     optimization_campaign.add_measurements(reccs)
 
-    measurements = optimization_campaign.measurements
+    measurements = campaign_init.measurements
 
     # get X and noisy y values
     x_names = [f'schwefel{i+1}' for i in range(N_DIMS_SCHWEF)]
@@ -132,13 +133,13 @@ def run_experiment(n_init, noise_level, budget, seed, noise_bool, bounds):
     y_train = measurements['schwefel'].to_numpy()
 
     # compile noise-free ground truth vals
-    y_real_complete = np.zeros(len(y_init_real) + len(y_real))
+    y_real_complete = y_init_real
 
-    for i, val in enumerate(y_init_real):
-        y_real_complete[i] = val
+    #for i, val in enumerate(y_init_real):
+    #    y_real_complete[i] = val#
 
-    for i, val in enumerate(y_real):
-        y_real_complete[i+len(y_init_real)] = val
+    #for i, val in enumerate(y_real):
+    #    y_real_complete[i+len(y_init_real)] = val
     
 
 
@@ -146,8 +147,8 @@ def run_experiment(n_init, noise_level, budget, seed, noise_bool, bounds):
     train_Y = torch.from_numpy(y_train)
     train_Y_real = torch.from_numpy(y_real_complete)
 
-    os.makedirs('results_baybe', exist_ok=True)
-    fname = f"results_baybe/{problem.__class__.__name__[:5]}_n_init_{n_init}_noiselvl_{noise_level}_budget_{budget}_seed_{seed}_noise_{noise_bool}.pt"
+    os.makedirs('results_random_baybe', exist_ok=True)
+    fname = f"results_random_baybe/{problem.__class__.__name__[:5]}_n_init_{n_init}_noiselvl_{noise_level}_budget_{budget}_seed_{seed}_noise_{noise_bool}.pt"
     torch.save((train_X, train_Y, train_Y_real, None), fname)
     
     return train_X, train_Y, train_Y_real, None

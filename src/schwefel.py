@@ -7,7 +7,7 @@ class SchwefelProblem:
         """
         self.noise_level = noise_level
         self.n_var = n_var  # Number of variables/dimensions
-        self.bounds = np.array([[-50] * self.n_var, [50] * self.n_var])
+        self.bounds = np.array([[range[0]] * self.n_var, [range[1]] * self.n_var])
 
     def _schwefel_individual(self, x):
         return x * np.sin(np.sqrt(np.abs(x)))
