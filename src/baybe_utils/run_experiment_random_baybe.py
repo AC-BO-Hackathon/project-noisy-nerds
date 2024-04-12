@@ -53,7 +53,7 @@ from botorch.utils.sampling import draw_sobol_samples
 from src.schwefel import SchwefelProblem
 from time import time
 
-def run_experiment(n_init, noise_level, budget, seed, noise_bool, bounds):
+def run_experiment(n_init, noise_level, budget, seed, noise_bool, bounds, fp):
     """
     Run a bayesian optimization campaign on the 2-dimensional
     schwefel function using the specified parameters. Uses BayBE with the
@@ -147,8 +147,8 @@ def run_experiment(n_init, noise_level, budget, seed, noise_bool, bounds):
     train_Y = torch.from_numpy(y_train)
     train_Y_real = torch.from_numpy(y_real_complete)
 
-    os.makedirs('results_random_baybe', exist_ok=True)
-    fname = f"results_random_baybe/{problem.__class__.__name__[:5]}_n_init_{n_init}_noiselvl_{noise_level}_budget_{budget}_seed_{seed}_noise_{noise_bool}.pt"
+    os.makedirs(fp, exist_ok=True)
+    fname = f"{fp}/{problem.__class__.__name__[:5]}_n_init_{n_init}_noiselvl_{noise_level}_budget_{budget}_seed_{seed}_noise_{noise_bool}.pt"
     torch.save((train_X, train_Y, train_Y_real, None), fname)
     
     return train_X, train_Y, train_Y_real, None

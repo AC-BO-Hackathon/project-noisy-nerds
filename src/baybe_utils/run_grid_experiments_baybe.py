@@ -9,10 +9,10 @@ MAX_NUM_PENDING_TASKS = 12
 
 
 #@ray.remote
-def worker(n_init, noise_level, budget, seed, noise_bool, bounds):
+def worker(n_init, noise_level, budget, seed, noise_bool, bounds, fp):
 
     try:
-        run_experiment(n_init, noise_level, budget, seed, noise_bool,bounds)
+        run_experiment(n_init, noise_level, budget, seed, noise_bool,bounds, fp)
         # saved file looks like this: results\Schwe_n_init_6_noiselvl_0_budget_0_seed_2_noise_False.pt
     except Exception as e:
         print(e)
@@ -21,7 +21,7 @@ def worker(n_init, noise_level, budget, seed, noise_bool, bounds):
         
     return 0
 
-def run_grid_experiments(seeds, n_inits, noise_levels, noise_bools, budget, bounds):
+def run_grid_experiments(seeds, n_inits, noise_levels, noise_bools, budget, bounds, fp):
     
     # ray.init(local_mode=True)
     #ray.init(ignore_reinit_error=True)
@@ -37,7 +37,7 @@ def run_grid_experiments(seeds, n_inits, noise_levels, noise_bools, budget, boun
                     #    ray.get(completed_tasks[0])
 
                     #sleep(1)
-                    task = worker(n_init, noise_level, budget, seed, noise_bool, bounds)
+                    task = worker(n_init, noise_level, budget, seed, noise_bool, bounds, fp)
                     tasks.append(task)
                     print(f'Started problem {n_init} noise {noise_level} budget {budget} seed {seed}, time: {time() - start_time:.2f}s')
                     #gc.collect()
